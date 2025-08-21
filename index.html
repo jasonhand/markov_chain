@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Markov Chain Visualizer</title>
+  <meta name="description" content="Interactive Markov chain visualizer for GitHub Pages." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header>
+  <h1>Markov Chain Visualizer</h1>
+  <p class="tagline">Edit a transition matrix, run a simulation, and see distributions and the stationary distribution.</p>
+</header>
+
+<main class="layout">
+  <section class="controls card">
+    <h2>Model</h2>
+    <div class="row">
+      <label for="preset">Preset:</label>
+      <select id="preset">
+        <option value="weather">Weather (Sunny/Rainy)</option>
+        <option value="web">Web Navigation (Home → Product → Checkout)</option>
+        <option value="absorbing">Absorbing (Play/Win/Lose)</option>
+        <option value="custom">Start Empty (Custom)</option>
+      </select>
+      <button id="loadPreset">Load</button>
+    </div>
+
+    <div class="row">
+      <label>States:</label>
+      <div id="statesContainer"></div>
+      <div class="buttons inline">
+        <button id="addState">+ Add State</button>
+        <button id="removeState">– Remove Last</button>
+      </div>
+    </div>
+
+    <h3>Transition Matrix (row-stochastic)</h3>
+    <div class="scroll-x">
+      <table id="matrixTable" class="matrix-table" aria-label="Transition matrix"></table>
+    </div>
+    <div class="buttons inline">
+      <button id="normalizeRows">Normalize Rows</button>
+      <button id="randomize">Randomize</button>
+    </div>
+
+    <h3>Initial Distribution</h3>
+    <div class="scroll-x">
+      <table id="initTable" class="matrix-table" aria-label="Initial distribution"></table>
+    </div>
+    <div class="buttons inline">
+      <button id="uniformInit">Set Uniform</button>
+      <button id="normalizeInit">Normalize</button>
+    </div>
+
+    <h2>Simulation</h2>
+    <div class="row">
+      <button id="step">Step</button>
+      <button id="run">Run</button>
+      <button id="pause" disabled>Pause</button>
+      <button id="reset">Reset</button>
+    </div>
+    <div class="row">
+      <label for="speed">Speed (ms/step):</label>
+      <input type="range" id="speed" min="50" max="1500" step="50" value="400" aria-describedby="speedValue" />
+      <span id="speedValue" aria-live="polite">400 ms</span>
+    </div>
+    <div class="row">
+      <label for="maxSteps">Max steps on run:</label>
+      <input type="number" id="maxSteps" min="1" max="2000" value="200" />
+    </div>
+
+    <h2>Analysis</h2>
+    <div class="buttons inline">
+      <button id="computeStationary" type="button">Compute Stationary Distribution</button>
+      <button id="checkAbsorbing" type="button">Find Absorbing States</button>
+    </div>
+    <div id="analysis" role="status" aria-live="polite"></div>
+
+    <details class="notes">
+      <summary>Notes</summary>
+      <ul>
+        <li>Rows must sum to 1. Use <em>Normalize Rows</em> if needed.</li>
+        <li>We model a discrete-time Markov chain where \(p_{t+1} = p_t P\).</li>
+        <li>If the chain is irreducible and aperiodic, the power method converges to the unique stationary distribution \(\pi\) with \(\pi = \pi P\).</li>
+        <li>Absorbing states have a row like [0, 0, ..., 1, ..., 0] with the 1 on the diagonal.</li>
+      </ul>
+    </details>
+  </section>
+
+  <section class="viz card">
+    <h2>State Graph</h2>
+    <svg id="graph" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Markov chain state graph"></svg>
+    <div class="legend">
+      <div><span class="legend-box density"></span> Node fill ≈ current probability</div>
+      <div><span class="legend-line"></span> Edge thickness ≈ transition probability</div>
+    </div>
+
+    <h2>Distribution Over Time</h2>
+    <canvas id="distChart" height="200"></canvas>
+  </section>
+</main>
+
+<footer>
+  <p>Built for GitHub Pages. No build step required. <a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank" rel="noopener">What is a Markov chain?</a></p>
+</footer>
+
+<noscript>
+  <div class="noscript">This app requires JavaScript to run.</div>
+</noscript>
+
+<script defer src="js/app.js"></script>
+</body>
+</html>
